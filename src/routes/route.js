@@ -69,5 +69,56 @@ router.post("/test-post-4", function(req, res) {
     arr.push(ele)
     res.send(  { msg: arr , status: true }  )
 })
+let players =
+   [
+       {
+           "name": "manish",
+           "dob": "1/1/1995",
+           "gender": "male",
+           "city": "jalandhar",
+           "sports": [
+               "swimming"
+           ]
+       },
+       {
+           "name": "gopal",
+           "dob": "1/09/1995",
+           "gender": "male",
+           "city": "delhi",
+           "sports": [
+               "soccer"
+           ],
+       },
+       {
+           "name": "lokesh",
+           "dob": "1/1/1990",
+           "gender": "male",
+           "city": "mumbai",
+           "sports": [
+               "soccer"
+           ],
+       },
+   ]
+
+ 
+router.post("/players-api",function(req,res){
+let x=req.body
+for(i=0;i<players.length;i++){
+    let sub=players[i]
+    if(sub.name==x.name){
+        return res.send("Exist")
+    }
+}
+players.push(x)
+
+res.send({data:players,status:true})
+    
+
+
+
+
+})
+
+
 
 module.exports = router;
