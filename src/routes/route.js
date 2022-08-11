@@ -113,11 +113,63 @@ players.push(x)
 
 res.send({data:players,status:true})
     
-
-
-
-
 })
+let persons =
+   [
+       {
+           "name": "manish",
+           "age": 10,
+           "votingStatus": "False"
+           
+       },
+       {
+        "name": "Sumit",
+        "age": 50,
+        "votingStatus": "False"
+       },
+       {
+        "name": "mansi",
+        "age": 20,
+        "votingStatus": "False"
+           
+       },
+       {
+       "name": "manish",
+       "age": 5,
+       "votingStatus": "False"
+       },
+       {
+        "name": "jay",
+        "age": 30,
+        "votingStatus": "False"
+       },
+       {
+        "name": "Dev",
+        "age": 5,
+        "votingStatus": "False"
+       }
+   ]
+   router.post("/persons",function(req,res){
+    let x=req.body
+    let arr=[]
+for(i=0;i<persons.length;i++){
+    let b=persons[i]
+    if(b.age>18){
+        b.votingStatus="True"
+
+     arr.push(b)
+    }
+     
+    
+        
+    
+    
+}
+
+    res.send({data:arr,status:true})
+        
+    })
+
 
 
 
