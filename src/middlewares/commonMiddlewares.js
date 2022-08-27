@@ -1,5 +1,11 @@
 
 const mid1= function ( req, res, next) {
+    if(req.headers.isfreeappuser==undefined)
+    res.send({msg:"Missing Header"})
+    else{
+        req.mid1=Boolean(req.headers.isfreeappuser)
+        next()
+    }
     req.falana= "hi there. i am adding something new to the req object"
     console.log("Hi I am a middleware named Mid1")
     next()
