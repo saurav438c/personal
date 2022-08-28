@@ -33,10 +33,44 @@ if(!mongoose.isValidObjectId(ProductId)){
    if(!Product){
        return res.send({status:false,msg:"Details Not Present"})
    }
-   if(header=='false'){
+   let productDetail = await BookModel.findById(ProductId);
+   //console.log(productDetail)
+   let priceValue = productDetail.price
+   //console.log(priceValue)
+   let userDetail = await UserModel.findById(userId)
+   //console.log(userDetail)
+   let userBalance = userDetail.balance;
+   //console.log(userBalance)
+   if(header === "false"){
+    if(userBalance > priceValue){
+        let updatedBalance = await UserModel.findByIdAndUpdate(
+            {_id: userId},
+            {$inc: {balance: -priceValue} },
+            {new: true}
+        )
+        data.amount = priceValue;
+        data.isFreeAppUser = false
+        let orderDetail = await authorModel.create(data)
+        res.send({order: orderDetail})
+    }
+    else{
+        res.send({error: "insufficient balance"})
+    }
+}
+else{
+    data.amount = 0;
+    data.isFreeAppUser = true
+    let orderDetails = await OrderModel.create(data);
+    res.send({order: orderDetails})
+}
+}
+
+
+/*if(header=='false'){
     let ProductPrice=Product.price
-    let UserBalance=uB["balance"]
-    if(UserBalance>=price){
+    let UserBalance=ProductPrice["balance"]
+   
+    if(UserBalance >ProductPrice ){
         let UserNewBalance= userBalance-ProductPrice
         await UserModel.findOneAndUpdate(
             {_id:userId},
@@ -59,7 +93,7 @@ if(!mongoose.isValidObjectId(ProductId)){
            res.send({data: Data})
 
    }
-}
+}*/
 
       /* let = await BookModel.findById(ProductId)
        if(!author){
