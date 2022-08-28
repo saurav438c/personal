@@ -95,8 +95,9 @@ const updateUser = async function (req, res) {
   console.log(token);
 
   let userData = req.body;
-  let updatedUser = await userModel.findOneAndUpdate({ _id: userId }, userData);
+  let updatedUser = await userModel.findOneAndUpdate({_id:userId},{isDeleted: true},{new: true});
   res.send({ status: updatedUser, data: updatedUser });
+
 };
 
 const deleteUser = async function (req, res) {
@@ -106,12 +107,10 @@ const deleteUser = async function (req, res) {
   // Return a different error message in both these cases
 
   let userId = req.params.userId;
-  let user = await userModel.findById(userId);
-  let deleteUser=await userModel.findOneAndDelete({_id:userId},{isDeleted:true},{new:true})
-   res.send({msg:deleteUser})
-
+  let users = await userModel.findById(userId);
+  
   //Return an error if no user with the given id exists in the db
-  if (!user) {
+  if (!users) {
     return res.send("No such user exists");
   }
   let token = req.headers["x-Auth-token"];
@@ -121,6 +120,9 @@ const deleteUser = async function (req, res) {
   if (!token) return res.send({ status: false, msg: "token must be present" });
 
   console.log(token);
+  let deleteUser=await userModel.findAndUpdate({_id:userId},{isDeleted:true},{new:true})
+   res.send({data:deleteUser})
+
 
   /*let userData = req.body;
   let updatedUser = await userModel.findOneAndUpdate({ _id: userId }, userData);
