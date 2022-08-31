@@ -5,11 +5,18 @@ const createUser = async function (abcd, xyz) {
   //You can name the req, res objects anything.
   //but the first parameter is always the request 
   //the second parameter is always the response
+  try{
   let data = abcd.body;
   let savedData = await userModel.create(data);
   console.log(abcd.newAtribute);
-  xyz.send({ msg: savedData });
-};
+  xyz.status(201).send({ msg: savedData });
+}
+catch(err)
+{
+  console.log("this is error:",err)
+  xyz.status(500).send({msg:"server error",error:err})
+}
+}
 
 const loginUser = async function (req, res) {
   let userName = req.body.emailId;
@@ -17,7 +24,7 @@ const loginUser = async function (req, res) {
 
   let user = await userModel.findOne({ emailId: userName, password: password });
   if (!user)
-    return res.send({
+    return res.status(404).send({
       status: false,
       msg: "username or the password is not corerct",
     });
@@ -37,7 +44,7 @@ const loginUser = async function (req, res) {
     "functionup-thorium"
   );
   res.setHeader("x-auth-token", token);
-  res.send({ status: true, data: token });
+  res.status(202).send({ status: true, data: token });
 };
 
 const getUserData = async function (req, res) {
@@ -45,7 +52,7 @@ const getUserData = async function (req, res) {
   if (!token) token = req.headers["x-auth-token"];
 
   //If no token is present in the request header return error
-  if (!token) return res.send({ status: false, msg: "token must be present" });
+  if (!token) return res.status(200).send({ status: false, msg: "token must be present" });
 
   console.log(token);
   
@@ -71,21 +78,29 @@ const updateUser = async function (req, res) {
 // Check if the token is present
 // Check if the token present is a valid token
 // Return a different error message in both these cases
-
+try{
   let userId = req.params.userId;
   let user = await userModel.findById(userId);
   //Return an error if no user with the given id exists in the db
   if (!user) {
-    return res.send("No such user exists");
+    return res.status(200).send("No such user exists");
   }
 
   let userData = req.body;
   let updatedUser = await userModel.findOneAndUpdate({ _id: userId }, userData);
   res.send({ status: updatedUser, data: updatedUser });
-};
+}
+catch(err)
+{
+  console.log("this is error:",err)
+  res.status(400).send({msg:"server error",error:err})
+
+}
+}
 
 const postMessage = async function (req, res) {
-    let message = req.body.message
+  try{
+  let message = req.body.message
     // Check if the token is present
     // Check if the token present is a valid token
     // Return a different error message in both these cases
@@ -93,7 +108,7 @@ const postMessage = async function (req, res) {
     if(!token) return res.send({status: false, msg: "token must be present in the request header"})
     let decodedToken = jwt.verify(token, 'functionup-thorium')
 
-    if(!decodedToken) return res.send({status: false, msg:"token is not valid"})
+    if(!decodedToken) return res.status(400).send({status: false, msg:"token is not valid"})
     
     //userId for which the request is made. In this case message to be posted.
     let userToBeModified = req.params.userId
@@ -101,7 +116,7 @@ const postMessage = async function (req, res) {
     let userLoggedIn = decodedToken.userId
 
     //userId comparision to check if the logged-in user is requesting for their own data
-    if(userToBeModified != userLoggedIn) return res.send({status: false, msg: 'User logged is not allowed to modify the requested users data'})
+    if(userToBeModified != userLoggedIn) return res.status(400).send({status: false, msg: 'User logged is not allowed to modify the requested users data'})
 
     let user = await userModel.findById(req.params.userId)
     if(!user) return res.send({status: false, msg: 'No such user exists'})
@@ -113,6 +128,12 @@ const postMessage = async function (req, res) {
 
     //return the updated user document
     return res.send({status: true, data: updatedUser})
+}
+catch(err)
+{
+  console.log("this is error:",err)
+  res.status(400).send({msg:"server error",error:err})
+}
 }
 
 module.exports.createUser = createUser;
